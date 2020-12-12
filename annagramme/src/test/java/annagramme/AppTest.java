@@ -82,15 +82,7 @@ class AppTest {
         assertEquals(giveListAnagramme(words), Arrays.asList("ab","ac"));
     }
 
-    @Test
-    void shouldReturnAcAdWhenWordsAreAc_Ca_Ab_Ba() {
-        List<String> words = new ArrayList<String>();
-        words.add("ab");
-        words.add("ba");
-        words.add("ac");
-        words.add("ca");
-        assertEquals(giveListAnagramme(words), Arrays.asList("ab","ac"));
-    }
+    
 
     
 
