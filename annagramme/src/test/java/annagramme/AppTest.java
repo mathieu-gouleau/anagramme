@@ -39,13 +39,16 @@ class AppTest {
         for(int i = 0; i<newListWord.size()-1; i++){
             for(int k =i+1;k <newListWord.size(); k++){
                 if(newListWord.get(i).equals(newListWord.get(k))){
-                    finalListWord.add(newListWord.get(i));
+                    newListWord.remove(k);
                 }
                 
+                
             }
+
             
         }
-        return finalListWord;
+
+        return newListWord;
 
         
         
@@ -81,6 +84,20 @@ class AppTest {
         words.add("ca");
         assertEquals(giveListAnagramme(words), Arrays.asList("ab","ac"));
     }
+
+
+    @Test
+    void shouldReturnAbAcdcWhenWordsAreAb_ba_Ac_Ca_Cd() {
+        List<String> words = new ArrayList<String>();
+        words.add("ab");
+        words.add("ba");
+        words.add("ac");
+        words.add("ca");
+        words.add("cd");
+        assertEquals(giveListAnagramme(words), Arrays.asList("ab","ac","cd"));
+    }
+
+
 
     
 
