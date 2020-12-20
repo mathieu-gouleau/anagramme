@@ -18,66 +18,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class AppTest {
 
-    public HashMap<String, List<String>> giveListAnagramme(List<String> words) {
-        words.stream().sorted();
 
-        List<String> newwords = new ArrayList<>();
-        HashMap<String, List<String>> newListWord = new HashMap<>();
-        Map<String, String> map = new TreeMap<>();
-        HashMap<String, List<String>> newfinalListWord = new HashMap<>();
-        words.replaceAll(String::toLowerCase);
-        words = words.stream().map(word -> word.replace("\'", "")).collect(Collectors.toList());
-        words = words.stream().distinct().collect(Collectors.toList());
-        if (words.size() <= 1) {
-            String element = words.get(0);
-            newListWord.put(element, words);
-            return newListWord;
-        }
-        int rang = 0;
-        for (String i : words) {
-            char[] chars = i.toCharArray();
-            Arrays.sort(chars);
-            String sorted = new String(chars);
-            newwords.add(sorted);
-            map.put(i, sorted);
-
-            rang++;
-
-        }
-
-
-        Map<String, String> topTen =
-            map.entrySet().stream()
-                .sorted(Map.Entry.comparingByValue(Comparator.naturalOrder()))
-                .collect(Collectors.toMap(
-                    Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
-        List<String> listAnagram = new ArrayList<>();
-        for (int j = 0; j < topTen.keySet().size(); j++) {
-
-
-            listAnagram.add(topTen.keySet().toArray()[j].toString());
-            newListWord.put(topTen.values().toArray()[j].toString(), listAnagram);
-            if ((j >= topTen.keySet().size() - 1) || !topTen.values().toArray()[j + 1].toString().equals(topTen.values().toArray()[j].toString())) {
-                listAnagram = new ArrayList<>();
-
-            }
-            topTen.remove(topTen.keySet().toArray()[j], topTen.values().toArray()[j]);
-            j--;
-        }
-
-        return newListWord;
-
-    }
 
     public class Anagram {
 
-        public String getWord() {
-            return word;
-        }
-
-        public String getSortedWord() {
-            return sortedWord;
-        }
 
         private String word;
         private String sortedWord;
@@ -87,6 +31,13 @@ class AppTest {
             this.sortedWord = sorted;
         }
 
+        public String getWord() {
+            return word;
+        }
+
+        public String getSortedWord() {
+            return sortedWord;
+        }
 
         //constructors, getter/setters
     }
@@ -128,48 +79,80 @@ class AppTest {
     @Test
     void shouldReturnTheSameLetter() {
         List<String> words = new ArrayList<String>();
-        HashMap<String, List<String>> result = new HashMap<String, List<String>>();
-        result.put("a", Arrays.asList("a"));
+        Map<String, Set<String>> result = new HashMap<>();
+
+        Set setA = new HashSet();
+
+        setA.add("a");
+
+        result.put("a", setA);
 
 
         words.add("a");
-        assertEquals(giveListAnagramme(words), result);
+        assertEquals(giveListAnagrammeLong(words), result);
     }
 
 
     @Test
     void shouldReturnAbWhenWordsAreAb_Ba() {
         List<String> words = new ArrayList<String>();
-        HashMap<String, List<String>> result = new HashMap<String, List<String>>();
-        result.put("ab", Arrays.asList("ab", "ba"));
+        Map<String, Set<String>> result = new HashMap<>();
+
+        Set setA = new HashSet();
+
+        setA.add("ab");
+        setA.add("ba");
+        result.put("ab", setA);
 
         words.add("ab");
         words.add("ba");
-        assertEquals(giveListAnagramme(words), result);
+        assertEquals(giveListAnagrammeLong(words), result);
     }
 
     @Test
     void shouldReturnAcAdWhenWordsAreAc_Ca_Ab_Ba() {
         List<String> words = new ArrayList<String>();
-        HashMap<String, List<String>> result = new HashMap<String, List<String>>();
-        result.put("ab", Arrays.asList("ab", "ba"));
-        result.put("ac", Arrays.asList("ac", "ca"));
+        Map<String, Set<String>> result = new HashMap<>();
+
+        Set setA = new HashSet();
+
+        setA.add("ab");
+        setA.add("ba");
+        result.put("ab", setA);
+        Set setB = new HashSet();
+
+        setB.add("ac");
+        setB.add("ca");
+        result.put("ac", setB);
+
 
         words.add("ab");
         words.add("ac");
         words.add("ca");
         words.add("ba");
-        assertEquals(giveListAnagramme(words), result);
+        assertEquals(giveListAnagrammeLong(words), result);
     }
 
 
     @Test
     void shouldReturnAbAcdcWhenWordsAreAb_ba_Ac_Ca_Cd() {
-        List<String> words = new ArrayList<String>();
-        HashMap<String, List<String>> result = new HashMap<String, List<String>>();
-        result.put("ab", Arrays.asList("ab", "ba"));
-        result.put("ac", Arrays.asList("ac", "ca"));
-        result.put("cd", Arrays.asList("cd"));
+        List<String> words = new ArrayList<>();
+        Map<String, Set<String>> result = new HashMap<>();
+
+        Set setA = new HashSet();
+
+        setA.add("ab");
+        setA.add("ba");
+        result.put("ab", setA);
+        Set setB = new HashSet();
+
+        setB.add("ac");
+        setB.add("ca");
+        result.put("ac", setB);
+        Set setC = new HashSet();
+
+        setC.add("cd");
+        result.put("cd", setC);
 
 
         words.add("ab");
@@ -177,24 +160,37 @@ class AppTest {
         words.add("ac");
         words.add("ca");
         words.add("cd");
-        assertEquals(giveListAnagramme(words), result);
+        assertEquals(giveListAnagrammeLong(words), result);
     }
 
 
     @Test
     void shouldReturnAbAcdcWhenWordsAreAb_Ac_Ba_Ca_Cd() {
         List<String> words = new ArrayList<String>();
-        HashMap<String, List<String>> result = new HashMap<String, List<String>>();
-        result.put("ab", Arrays.asList("ab", "ba"));
-        result.put("ac", Arrays.asList("ac", "ca"));
-        result.put("cd", Arrays.asList("cd"));
+        Map<String, Set<String>> result = new HashMap<>();
+
+
+        Set setA = new HashSet();
+
+        setA.add("ab");
+        setA.add("ba");
+        result.put("ab", setA);
+        Set setB = new HashSet();
+
+        setB.add("ac");
+        setB.add("ca");
+        result.put("ac", setB);
+        Set setC = new HashSet();
+
+        setC.add("cd");
+        result.put("cd", setC);
 
         words.add("ab");
         words.add("ac");
         words.add("ba");
         words.add("ca");
         words.add("cd");
-        assertEquals(giveListAnagramme(words), result);
+        assertEquals(giveListAnagrammeLong(words), result);
     }
 
 
