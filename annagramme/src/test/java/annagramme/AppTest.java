@@ -6,7 +6,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.groupingBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -18,48 +20,107 @@ class AppTest {
 
     public HashMap<String, List<String>> giveListAnagramme(List<String> words) {
         words.stream().sorted();
-        HashMap<String, List<String>> newListWord = new HashMap<String, List<String>>();
-        HashMap<String, List<Integer>> newfinalListWord = new HashMap<String, List<Integer>>();
 
+        List<String> newwords = new ArrayList<>();
+        HashMap<String, List<String>> newListWord = new HashMap<>();
+        Map<String, String> map = new TreeMap<>();
+        HashMap<String, List<String>> newfinalListWord = new HashMap<>();
+        words.replaceAll(String::toLowerCase);
+        words = words.stream().map(word -> word.replace("\'", "")).collect(Collectors.toList());
+        words = words.stream().distinct().collect(Collectors.toList());
         if (words.size() <= 1) {
             String element = words.get(0);
             newListWord.put(element, words);
             return newListWord;
         }
-        Integer rang = 0;
+        int rang = 0;
         for (String i : words) {
-            i = i.replace("\'", "");
             char[] chars = i.toCharArray();
             Arrays.sort(chars);
             String sorted = new String(chars);
+            newwords.add(sorted);
+            map.put(i, sorted);
 
-            if (newfinalListWord.containsKey(sorted)) {
-                newfinalListWord.get(sorted).add(rang);
-            } else {
-                newfinalListWord.put(sorted, new ArrayList<Integer>(rang));
-            }
             rang++;
-            System.out.println(rang);
+
         }
-        Map<String, List<Integer>> map = new TreeMap<String, List<Integer>>(newfinalListWord);
-        for (Map.Entry<String, List<Integer>> entry : map.entrySet()) {
-            String key = entry.getKey();
-            List<Integer> value = entry.getValue();
-            List<String> ListAnagramme = new ArrayList<String>();
-            for (Integer rang1 : value) {
-                ListAnagramme.add(words.get(rang1));
+
+
+        Map<String, String> topTen =
+            map.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.naturalOrder()))
+                .collect(Collectors.toMap(
+                    Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+        List<String> listAnagram = new ArrayList<>();
+        for (int j = 0; j < topTen.keySet().size(); j++) {
+
+
+            listAnagram.add(topTen.keySet().toArray()[j].toString());
+            newListWord.put(topTen.values().toArray()[j].toString(), listAnagram);
+            if ((j >= topTen.keySet().size() - 1) || !topTen.values().toArray()[j + 1].toString().equals(topTen.values().toArray()[j].toString())) {
+                listAnagram = new ArrayList<>();
 
             }
-            newListWord.put(key, ListAnagramme);
+            topTen.remove(topTen.keySet().toArray()[j], topTen.values().toArray()[j]);
+            j--;
         }
-
-
-        // finalListWord = finalListWord.stream().distinct().collect(Collectors.toList());
 
         return newListWord;
 
     }
 
+    public class Anagram {
+
+        public String getWord() {
+            return word;
+        }
+
+        public String getSortedWord() {
+            return sortedWord;
+        }
+
+        private String word;
+        private String sortedWord;
+
+        public Anagram(String word, String sorted) {
+            this.word = word;
+            this.sortedWord = sorted;
+        }
+
+
+        //constructors, getter/setters
+    }
+
+    public Map<String, Set<String>> giveListAnagrammeLong(List<String> words) {
+
+
+        Map<String, String> map = new TreeMap<>();
+        words.replaceAll(String::toLowerCase);
+        words = words.stream().map(word -> word.replace("\'", "")).collect(Collectors.toList());
+        words = words.stream().distinct().collect(Collectors.toList());
+        List<Anagram> items = new ArrayList<>();
+
+        int rang = 0;
+        for (String i : words) {
+            char[] chars = i.toCharArray();
+            Arrays.sort(chars);
+            String sorted = new String(chars);
+            items.add(new Anagram(i, sorted));
+
+            rang++;
+
+        }
+
+
+        Map<String, Set<String>> topTen =
+            items.stream().collect(
+                groupingBy(Anagram::getSortedWord,
+                    Collectors.mapping(Anagram::getWord, Collectors.toSet())));
+
+
+        return topTen;
+
+    }
 
     /**
      * Rigorous Test.
@@ -106,9 +167,9 @@ class AppTest {
     void shouldReturnAbAcdcWhenWordsAreAb_ba_Ac_Ca_Cd() {
         List<String> words = new ArrayList<String>();
         HashMap<String, List<String>> result = new HashMap<String, List<String>>();
-        result.put("ab", Arrays.asList("ba"));
-        result.put("ac", Arrays.asList("ca"));
-        result.put("cd", Arrays.asList());
+        result.put("ab", Arrays.asList("ab", "ba"));
+        result.put("ac", Arrays.asList("ac", "ca"));
+        result.put("cd", Arrays.asList("cd"));
 
 
         words.add("ab");
@@ -124,9 +185,9 @@ class AppTest {
     void shouldReturnAbAcdcWhenWordsAreAb_Ac_Ba_Ca_Cd() {
         List<String> words = new ArrayList<String>();
         HashMap<String, List<String>> result = new HashMap<String, List<String>>();
-        result.put("ab", Arrays.asList("ba"));
-        result.put("ac", Arrays.asList("ca"));
-        result.put("cd",Arrays.asList());
+        result.put("ab", Arrays.asList("ab", "ba"));
+        result.put("ac", Arrays.asList("ac", "ca"));
+        result.put("cd", Arrays.asList("cd"));
 
         words.add("ab");
         words.add("ac");
@@ -148,13 +209,14 @@ class AppTest {
         }
         bufReader.close();
 
+        listOfLines.sort(String::compareToIgnoreCase);
 
-        HashMap<String, List<String>> result = new HashMap<String, List<String>>();
-        result = giveListAnagramme(listOfLines);
-        result.forEach((k, v) -> {
-            System.out.format("key: %s, value: %s%n", k, v);
+        Map<String, Set<String>> result;
+        result = giveListAnagrammeLong(listOfLines);
+        result.forEach((key, value) -> {
+            if (value.size() > 2)
+                System.out.println(key + ":" + value);
         });
+
     }
-
-
 }
