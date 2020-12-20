@@ -141,7 +141,7 @@ class AppTest {
     void shouldReturnAbWhenWordsAreAb_Ba() {
         List<String> words = new ArrayList<String>();
         HashMap<String, List<String>> result = new HashMap<String, List<String>>();
-        result.put("ab", Arrays.asList("ba"));
+        result.put("ab", Arrays.asList("ab", "ba"));
 
         words.add("ab");
         words.add("ba");
@@ -152,8 +152,8 @@ class AppTest {
     void shouldReturnAcAdWhenWordsAreAc_Ca_Ab_Ba() {
         List<String> words = new ArrayList<String>();
         HashMap<String, List<String>> result = new HashMap<String, List<String>>();
-        result.put("ab", Arrays.asList("ba"));
-        result.put("ac", Arrays.asList("ca"));
+        result.put("ab", Arrays.asList("ab", "ba"));
+        result.put("ac", Arrays.asList("ac", "ca"));
 
         words.add("ab");
         words.add("ac");
@@ -214,7 +214,7 @@ class AppTest {
         Map<String, Set<String>> result;
         result = giveListAnagrammeLong(listOfLines);
         result.forEach((key, value) -> {
-            if (value.size() > 2)
+            if (value.size() > 12)
                 System.out.println(key + ":" + value);
         });
 
