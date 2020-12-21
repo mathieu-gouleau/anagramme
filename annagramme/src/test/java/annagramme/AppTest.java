@@ -14,57 +14,53 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Unit test for simple App.
  */
+class Anagram {
 
+
+    private String word;
+    private String sortedWord;
+
+    public Anagram(String word, String sorted) {
+        this.word = word;
+        this.sortedWord = sorted;
+    }
+
+    public String getWord() {
+        return word;
+    }
+
+    public String getSortedWord() {
+        return sortedWord;
+    }
+
+    //constructors, getter/setters
+}
 
 class AppTest {
 
 
 
-    public class Anagram {
 
-
-        private String word;
-        private String sortedWord;
-
-        public Anagram(String word, String sorted) {
-            this.word = word;
-            this.sortedWord = sorted;
-        }
-
-        public String getWord() {
-            return word;
-        }
-
-        public String getSortedWord() {
-            return sortedWord;
-        }
-
-        //constructors, getter/setters
-    }
 
     public Map<String, Set<String>> giveListAnagrammeLong(List<String> words) {
 
 
-        Map<String, String> map = new TreeMap<>();
         words.replaceAll(String::toLowerCase);
         words = words.stream().map(word -> word.replace("\'", "")).collect(Collectors.toList());
         words = words.stream().distinct().collect(Collectors.toList());
         List<Anagram> items = new ArrayList<>();
 
-        int rang = 0;
         for (String i : words) {
             char[] chars = i.toCharArray();
             Arrays.sort(chars);
             String sorted = new String(chars);
             items.add(new Anagram(i, sorted));
 
-            rang++;
-
         }
 
 
         Map<String, Set<String>> topTen =
-            items.stream().collect(
+            items.stream().parallel().collect(
                 groupingBy(Anagram::getSortedWord,
                     Collectors.mapping(Anagram::getWord, Collectors.toSet())));
 
